@@ -65,7 +65,7 @@ See the [**examples**](https://github.com/DotzInc/debussy_airflow/tree/main/test
 Please submit [issues](https://github.com/DotzInc/debussy_airflow/issues) and [pull requests](https://github.com/DotzInc/debussy_airflow/pulls) in our official repo:
 [https://github.com/DotzInc/debussy_airflow](https://github.com/DotzInc/debussy_airflow)
 
-We are happy to hear from you. Please email any feedback to the authors at [devrel@fivetran.com](mailto:devrel@fivetran.com).
+We are happy to hear from you. Please email any feedback to the authors at [dataengineer@dotz.com](mailto:dataengineer@dotz.com).
 
 ## Project Contributors and Maintainers
 
