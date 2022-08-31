@@ -15,7 +15,7 @@
 
 ## ⚠️Not exactly a provider
 
-This package provides operators, sensors, and hooks that enables running [Debussy Concert](https://github.com/DotzInc/debussy_concert) on Apache Airflow. However, it's not a traditional provider package in the sense Debussy Concert is not a tool, but rather a framework for data pipeline development and code generation.
+This package provides operators, sensors, and hooks that enables running [Debussy Concert](https://github.com/DotzInc/debussy_concert) on Apache Airflow. However, it's not a traditional Airflow provider package in the sense Debussy Concert is not a tool, but rather a framework for data pipeline development and code generation. Therefore, our hooks, operators and sensors acts as interfaces, extending other Airflow providers, and abstracting their usage.
 
 ```yaml
 Current Release: 0.1.0
