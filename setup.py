@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="debussy_airflow",
-    version="0.0.1",
+    version="0.0.2",
     author="Lawrence Fernandes",
     author_email="lawrence.stfs@gmail.com",
     description="Debussy Concert provider for Airflow",
