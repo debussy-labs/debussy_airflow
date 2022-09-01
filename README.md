@@ -18,13 +18,18 @@
 This package provides operators, sensors, and hooks that enables running [Debussy Concert](https://github.com/DotzInc/debussy_concert) on Apache Airflow. However, it's not a traditional Airflow provider package in the sense Debussy Concert is not a tool, but rather a framework for data pipeline development and code generation. Therefore, our hooks, operators and sensors acts as interfaces, extending other Airflow providers, and abstracting their usage.
 
 ## Installation
+
+You can install this package via
+
+```
+pip install debussy-airflow
+```
+
 ### Prerequisites
 
-An environment running `apache-airflow` with the following requirements:
+An environment running `apache-airflow` 2.2.0+ with the following requirements:
 
 ```yaml
-- Python Version >= 3.7
-- Airflow Version >= 2.0.0
 - apache-airflow-providers-google == 8.0.0
 - facebook-business == 13.0.0
 - mysql-connector-python == 8.0.24
