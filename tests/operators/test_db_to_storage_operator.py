@@ -1,7 +1,7 @@
 
 from airflow import DAG
 from debussy_airflow.hooks.storage_hook import GCSHook
-from debussy_airflow.operators.db_to_storage import DatabaseToStorageOperator
+from debussy_airflow.operators.db_to_storage_operator import DatabaseToStorageOperator
 
 from tests.test_tools import TestHookOperator, test_dag
 
@@ -28,7 +28,8 @@ with test_dag(
     )
     test_upload_task = TestHookOperator(
         task_id='test_upload_string',
-        execute_fn=lambda bucket, object_path, data_string: gcs_hook.upload_string(bucket, object_path, data_string),
+        execute_fn=lambda bucket, object_path, data_string: gcs_hook.upload_string(
+            bucket, object_path, data_string),
     )
 
     '''

@@ -1,7 +1,8 @@
 import base64
+
 from airflow import DAG
-from debussy_airflow.hooks.http import HttpHook, BearerHttpHook
-from tests.test_tools import test_dag, TestHookOperator
+from debussy_airflow.hooks.http_hook import BearerHttpHook, HttpHook
+from tests.test_tools import TestHookOperator, test_dag
 
 
 def extract_echo_token(response):
@@ -37,7 +38,8 @@ def assert_http_hook(context, hook, endpoint, headers, data, log):
     log.info("OK - args test")
     assert response.json()['headers']['x-test'] == 'test_header'
     log.info("OK - x-test header test")
-    assert response.json()['headers']['authorization'] == f'Basic {encoded_auth}'
+    assert response.json()[
+        'headers']['authorization'] == f'Basic {encoded_auth}'
     log.info("OK - authorization header test")
 
 
@@ -48,20 +50,25 @@ def assert_bearer_hook(context, hook, endpoint, headers, data, log):
     log.info("OK - args test")
     assert response.json()['headers']['x-test'] == 'test_header'
     log.info("OK - x-test header test")
-    assert response.json()['headers']['authorization'] == f'Bearer {test_token}'
+    assert response.json()[
+        'headers']['authorization'] == f'Bearer {test_token}'
     log.info("OK - authorization header test")
 
 
 with test_dag('test_debussy_http_dag') as dag:
-    test_http_run = TestHookOperator(task_id='http_auth_test', execute_fn=assert_authentication)
-    test_http_run.fn_kwargs = {'log': test_http_run.log, 'hook': http_hook, 'endpoint': '/basic-auth'}
+    test_http_run = TestHookOperator(
+        task_id='http_auth_test', execute_fn=assert_authentication)
+    test_http_run.fn_kwargs = {'log': test_http_run.log,
+                               'hook': http_hook, 'endpoint': '/basic-auth'}
 
-    test_http_run = TestHookOperator(task_id='http_test', execute_fn=assert_http_hook)
+    test_http_run = TestHookOperator(
+        task_id='http_test', execute_fn=assert_http_hook)
     test_http_run.fn_kwargs = {'log': test_http_run.log, 'hook': http_hook, 'endpoint': '/get',
                                'headers': {'x-test': 'test_header'},
                                'data': {'name': 'debussy'}}
 
-    test_http_run = TestHookOperator(task_id='bearer_test', execute_fn=assert_bearer_hook)
+    test_http_run = TestHookOperator(
+        task_id='bearer_test', execute_fn=assert_bearer_hook)
     test_http_run.fn_kwargs = {'log': test_http_run.log, 'hook': bearer_hook, 'endpoint': '/get',
                                'headers': {'x-test': 'test_header'},
                                'data': {'name': 'debussy'}}

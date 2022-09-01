@@ -6,13 +6,13 @@ from airflow.models import Connection
 from airflow.hooks.dbapi_hook import DbApiHook as AirflowDbApiHook
 
 
-class DbApiInterface(AirflowDbApiHook):
+class DbApiInterfaceHook(AirflowDbApiHook):
     @abstractmethod
     def query_run(self, sql: str, autocommit: bool):
         pass
 
 
-class MySqlConnectorHook(DbApiInterface):
+class MySqlConnectorHook(DbApiInterfaceHook):
     def __init__(self, rdbms_conn_id: str = "rdbms_conn_id"):
         self.rdbms_conn_id = rdbms_conn_id
         self.conn_name_attr = rdbms_conn_id

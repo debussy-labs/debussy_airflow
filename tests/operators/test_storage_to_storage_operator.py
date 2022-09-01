@@ -1,7 +1,8 @@
 from airflow import DAG
-from test_dags.test_tools import test_dag
 from debussy_airflow.hooks.storage_hook import StorageHookInterface
-from debussy_airflow.operators.storage_to_storage import StorageToStorageOperator
+from debussy_airflow.operators.storage_to_storage_operator import \
+    StorageToStorageOperator
+from tests.test_tools import test_dag
 
 
 class StorageTestHook(StorageHookInterface):
@@ -39,6 +40,7 @@ with test_dag(
         temp_folder='/tmp',
         task_id="test_file_storage_to_storage_operator"
     )
+
     test_storage_to_storage_operator = StorageToStorageOperator(
         origin_storage_hook=hook_test, origin_file_uri="storage://origin_uri/",
         destination_storage_hook=hook_test, destination_file_uri="storage://destination_uri",

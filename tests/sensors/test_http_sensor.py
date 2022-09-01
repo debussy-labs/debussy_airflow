@@ -1,9 +1,8 @@
-
 from airflow import DAG
-from debussy_airflow.hooks.http import HttpHook
-from debussy_airflow.operators.http import HTTPOperator
-from debussy_airflow.sensors.http import DebussyHttpSensor
-from test_dags.test_tools import test_dag
+from debussy_airflow.hooks.http_hook import HttpHook
+from debussy_airflow.operators.http_operator import HTTPOperator
+from debussy_airflow.sensors.http_sensor import DebussyHttpSensor
+from tests.test_tools import test_dag
 
 
 def check_response(response, *, expected_json_content):

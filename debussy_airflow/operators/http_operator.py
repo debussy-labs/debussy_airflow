@@ -1,5 +1,5 @@
 from airflow.models.baseoperator import BaseOperator
-from debussy_airflow.hooks.http import HttpHook
+from debussy_airflow.hooks.http_hook import HttpHook
 
 
 class HTTPOperator(BaseOperator):

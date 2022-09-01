@@ -8,9 +8,9 @@ from airflow.providers.google.cloud.operators.bigquery import \
     BigQueryCreateEmptyTableOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import \
     GCSToBigQueryOperator
-from debussy_airflow.hooks.facebook_ads import FacebookAdsHook
+from debussy_airflow.hooks.facebook_ads_hook import FacebookAdsHook
 from debussy_airflow.hooks.storage_hook import GCSHook
-from debussy_airflow.operators.facebook_ads_to_storage import \
+from debussy_airflow.operators.facebook_ads_to_storage_operator import \
     FacebookAdsToStorageOperator
 from facebook_business.adobjects.adsinsights import AdsInsights
 
@@ -49,7 +49,8 @@ parameters = {'level': 'campaign', 'limit': 1000, 'time_range': {'since': dateti
 rest_to_storage_task_id = 'facebook_ads_ad_api_to_gcs'
 
 storage_hook = GCSHook(gcp_conn_id="google_cloud_default")
-facebookads_hook = FacebookAdsHook(facebook_conn_id="facebook_growth", api_version='v13.0')
+facebookads_hook = FacebookAdsHook(
+    facebook_conn_id="facebook_growth", api_version='v13.0')
 
 
 def exists_file_in_bucket(task_id, **context):

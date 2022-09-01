@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
+
 from airflow import DAG
 from airflow.utils.task_group import TaskGroup
-from debussy_airflow.hooks.storage_hook import StorageHookInterface, GCSHook, SFTPHook, S3Hook
-from test_dags.test_tools import TestHookOperator, test_dag
-
+from debussy_airflow.hooks.storage_hook import (GCSHook, S3Hook, SFTPHook,
+                                                StorageHookInterface)
+from tests.test_tools import TestHookOperator, test_dag
 
 sftp_storage_hook = SFTPHook(sftp_conn_id="sftp_debussy_test")
 gcs_storage_hook = GCSHook(gcp_conn_id='google_cloud_debussy')
@@ -14,17 +15,20 @@ upload_string_text = "texto teste"
 
 
 def test_upload_file(context, storage_hook: StorageHookInterface, remote_file_uri, local_file_uri):
-    storage_hook.upload_file(remote_file_uri=remote_file_uri, local_file_uri=local_file_uri)
+    storage_hook.upload_file(
+        remote_file_uri=remote_file_uri, local_file_uri=local_file_uri)
 
 
 def test_upload_string(context, storage_hook: StorageHookInterface, remote_file_uri, data_string):
-    storage_hook.upload_string(remote_file_uri=remote_file_uri, data_string=data_string)
+    storage_hook.upload_string(
+        remote_file_uri=remote_file_uri, data_string=data_string)
 
 
 def test_download_file(context, storage_hook: StorageHookInterface, remote_file_uri, local_file_uri):
     local_path = Path(local_file_uri)
     local_path.resolve().parent.mkdir(parents=True, exist_ok=True)
-    storage_hook.download_file(remote_file_uri=remote_file_uri, local_file_uri=local_file_uri)
+    storage_hook.download_file(
+        remote_file_uri=remote_file_uri, local_file_uri=local_file_uri)
     assert os.path.exists(local_file_uri)
 
 

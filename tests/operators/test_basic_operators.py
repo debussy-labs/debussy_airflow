@@ -1,6 +1,6 @@
 from airflow import DAG
 import datetime as dt
-from debussy_airflow.operators.basic import BasicOperator, StartOperator, FinishOperator
+from debussy_airflow.operators.basic_operator import BasicOperator, StartOperator, FinishOperator
 from tests.test_tools import test_dag
 
 with test_dag(

@@ -1,6 +1,6 @@
 from airflow import DAG
-from debussy_airflow.hooks.http_api import LinkPaginatedApiHook
-from tests.test_tools import test_dag, TestHookOperator
+from debussy_airflow.hooks.http_api_hook import LinkPaginatedApiHook
+from tests.test_tools import TestHookOperator, test_dag
 
 
 def responses_handler(responses):
@@ -23,7 +23,8 @@ def assert_link_hook(context, hook, endpoint, data, log):
 
 
 with test_dag('test_debussy_api_dag') as dag:
-    test_link_hook = TestHookOperator(task_id='link_test', execute_fn=assert_link_hook)
+    test_link_hook = TestHookOperator(
+        task_id='link_test', execute_fn=assert_link_hook)
     test_link_hook.fn_kwargs = {
         'log': test_link_hook.log, 'hook': link_paginated_hook, 'endpoint': '/response-headers',
         'data': {"link": '<https://postman-echo.com/response-headers?page=2>; rel="next"', 'page': '1'}

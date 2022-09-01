@@ -59,7 +59,8 @@ class FacebookAdsHook(BaseHook):
             api_version=self.api_version,
         )
         ad_acc = AdAccountUser(fbid="me")
-        accounts_id = [account._json["id"] for account in ad_acc.get_ad_accounts()]
+        accounts_id = [account._json["id"]
+                       for account in ad_acc.get_ad_accounts()]
         fields_new = []
         for field in fields[0]:
             if field and field != ",":

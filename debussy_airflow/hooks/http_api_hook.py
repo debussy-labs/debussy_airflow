@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Callable, List
+
 import requests
-from debussy_airflow.hooks.http import HttpHook
+from debussy_airflow.hooks.http_hook import HttpHook
 
 
 class PaginatedApiHook(HttpHook, ABC):

@@ -17,10 +17,6 @@
 
 This package provides operators, sensors, and hooks that enables running [Debussy Concert](https://github.com/DotzInc/debussy_concert) on Apache Airflow. However, it's not a traditional Airflow provider package in the sense Debussy Concert is not a tool, but rather a framework for data pipeline development and code generation. Therefore, our hooks, operators and sensors acts as interfaces, extending other Airflow providers, and abstracting their usage.
 
-```yaml
-Current Release: 0.1.0
-```
-
 ## Installation
 ### Prerequisites
 
@@ -38,23 +34,23 @@ An environment running `apache-airflow` with the following requirements:
 ## Modules
 
 ### Hooks
-- [db_api](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/db_api.py)
-- [facebook_ads](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/facebook_ads.py)
-- [http_api](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/http_api.py)
-- [http](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/http.py)
+- [db_api_hook](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/db_api_hook.py)
+- [facebook_ads_hook](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/facebook_ads_hook.py)
+- [http_api_hook](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/http_api_hook.py)
+- [http_hook](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/http_hook.py)
 - [storage_hook](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/hooks/storage_hook.py)
 
 ### Operators
-- [basic](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/basic.py)
-- [db_to_storage](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/db_to_storage.py)
-- [facebook_ads_to_storage](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/facebook_ads_to_storage.py)
-- [http](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/http.py)
-- [rest_api_to_storage](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/rest_api_to_storage.py)
-- [storage_to_rdbms](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/storage_to_rdbms.py)
-- [storage_to_storage](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/storage_to_storage.py)
+- [basic_operator](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/basic_operator.py)
+- [db_to_storage_operator](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/db_to_storage_operator.py)
+- [facebook_ads_to_storage_operator](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/facebook_ads_to_storage_operator.py)
+- [http_operator](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/http_operator.py)
+- [rest_api_to_storage_operator](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/rest_api_to_storage_operator.py)
+- [storage_to_rdbms_operator](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/storage_to_rdbms_operator.py)
+- [storage_to_storage_operator](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/operators/storage_to_storage_operator.py)
 
 ### Sensors
-- [http](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/sensors/http.py)
+- [http_sensor](https://github.com/DotzInc/debussy_airflow/blob/main/debussy_airflow/sensors/http_sensor.py)
 
 ## Examples
 
