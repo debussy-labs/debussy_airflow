@@ -51,6 +51,5 @@ class FacebookAdsToStorageOperator(BaseOperator):
         exists_file = False
         if self.exists_file_tmp(file_name=self.file_name):
             self.storage_hook.upload_file(self.bucket_file_path, tmp_filepath)
-            exists_file = self.storage_hook.exists_file(
-                file_path=self.bucket_file_path)
+            exists_file = self.storage_hook.exists_file(file_path=self.bucket_file_path)
         return exists_file

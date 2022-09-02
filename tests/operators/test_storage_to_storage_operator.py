@@ -1,7 +1,8 @@
 from airflow import DAG
 from debussy_airflow.hooks.storage_hook import StorageHookInterface
-from debussy_airflow.operators.storage_to_storage_operator import \
-    StorageToStorageOperator
+from debussy_airflow.operators.storage_to_storage_operator import (
+    StorageToStorageOperator,
+)
 from tests.test_tools import test_dag
 
 
@@ -21,7 +22,7 @@ class StorageTestHook(StorageHookInterface):
         raise NotImplementedError()
 
     def list_dir(self, remote_uri):
-        return ['file', 'not_this_file']
+        return ["file", "not_this_file"]
 
     def exists_file(self):
         raise NotImplementedError()
@@ -30,22 +31,24 @@ class StorageTestHook(StorageHookInterface):
 hook_test = StorageTestHook()
 
 
-with test_dag(
-    dag_id='test_debussy_framework_storage_to_storage'
-) as dag:
+with test_dag(dag_id="test_debussy_framework_storage_to_storage") as dag:
 
     test_storage_to_storage_operator = StorageToStorageOperator(
-        origin_storage_hook=hook_test, origin_file_uri="storage://origin_uri/file",
-        destination_storage_hook=hook_test, destination_file_uri="storage://destination_uri/file",
-        temp_folder='/tmp',
-        task_id="test_file_storage_to_storage_operator"
+        origin_storage_hook=hook_test,
+        origin_file_uri="storage://origin_uri/file",
+        destination_storage_hook=hook_test,
+        destination_file_uri="storage://destination_uri/file",
+        temp_folder="/tmp",
+        task_id="test_file_storage_to_storage_operator",
     )
 
     test_storage_to_storage_operator = StorageToStorageOperator(
-        origin_storage_hook=hook_test, origin_file_uri="storage://origin_uri/",
-        destination_storage_hook=hook_test, destination_file_uri="storage://destination_uri",
-        temp_folder='/tmp',
+        origin_storage_hook=hook_test,
+        origin_file_uri="storage://origin_uri/",
+        destination_storage_hook=hook_test,
+        destination_file_uri="storage://destination_uri",
+        temp_folder="/tmp",
         task_id="test_folder_storage_to_storage_operator",
         is_dir=True,
-        file_filter_fn=lambda context, filename: filename == 'file'
+        file_filter_fn=lambda context, filename: filename == "file",
     )

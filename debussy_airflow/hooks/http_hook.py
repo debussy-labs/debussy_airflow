@@ -164,8 +164,7 @@ class HttpHook(BaseHook):
             )
         elif self.method == "HEAD":
             # HEAD doesn't use params
-            req = requests.Request(
-                self.method, url, headers=headers, **request_kwargs)
+            req = requests.Request(self.method, url, headers=headers, **request_kwargs)
         else:
             # Others use data
             req = requests.Request(
@@ -188,8 +187,7 @@ class HttpHook(BaseHook):
         except requests.exceptions.HTTPError:
             self.log.error("HTTP error: %s", response.reason)
             self.log.error(response.text)
-            raise AirflowException(
-                str(response.status_code) + ":" + response.reason)
+            raise AirflowException(str(response.status_code) + ":" + response.reason)
 
     def run_and_check(
         self,
@@ -234,8 +232,7 @@ class HttpHook(BaseHook):
             return response
 
         except requests.exceptions.ConnectionError as ex:
-            self.log.warning(
-                "%s Tenacity will retry to execute the operation", ex)
+            self.log.warning("%s Tenacity will retry to execute the operation", ex)
             raise ex
 
     def run_with_advanced_retry(

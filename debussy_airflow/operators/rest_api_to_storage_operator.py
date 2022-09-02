@@ -52,8 +52,7 @@ class RestApiToStorageOperator(BaseOperator):
         ):
             raise TypeError("http_hook must be an instance of HttpHook")
         if not isinstance(self.storage_hook, StorageHookInterface):
-            raise TypeError(
-                "storage_hook must be an instance of StorageHookInterface")
+            raise TypeError("storage_hook must be an instance of StorageHookInterface")
         if (
             self.flag_save_raw_response
             and self.raw_object_path is None
@@ -80,8 +79,7 @@ class RestApiToStorageOperator(BaseOperator):
         httphook_kwargs = httphook_kwargs or {}
         response = self.http_hook.run(endpoint, **httphook_kwargs)
         if self.flag_save_raw_response:
-            self.upload_from_string(
-                self.raw_bucket, raw_object_path, response.text)
+            self.upload_from_string(self.raw_bucket, raw_object_path, response.text)
         data_string = self.transformer(response, **context)
         self.upload_from_string(self.bucket, object_path, data_string)
         return len(data_string)

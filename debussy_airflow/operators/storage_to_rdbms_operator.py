@@ -35,8 +35,7 @@ class StorageToRdbmsOperator(BaseOperator):
         query = f"REPLACE INTO {self.table_name}({','.join(escaped_columns)}) VALUES "
         query_records = []
         for records in dataset_table.values.tolist():
-            query_records.append(str(records).replace(
-                "[", "(").replace("]", ")"))
+            query_records.append(str(records).replace("[", "(").replace("]", ")"))
         query_records = ",".join(query_records) + ";"
         query += query_records
         return query

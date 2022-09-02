@@ -11,7 +11,7 @@ def check_response(response, *, expected_json_content):
     return True
 
 
-conn_id = 'http_viacep'
+conn_id = "http_viacep"
 
 expected_json_content = {
     "cep": "01001-000",
@@ -23,32 +23,29 @@ expected_json_content = {
     "ibge": "3550308",
     "gia": "1004",
     "ddd": "11",
-    "siafi": "7107"
+    "siafi": "7107",
 }
 
 
-http_hook = HttpHook(
-    method='GET',
-    http_conn_id=conn_id
-)
+http_hook = HttpHook(method="GET", http_conn_id=conn_id)
 
-with test_dag('test_debussy_framework_http') as dag:
+with test_dag("test_debussy_framework_http") as dag:
 
-    headers = {'Content-Type': 'application/json'}
+    headers = {"Content-Type": "application/json"}
     http_run = HTTPOperator(
-        task_id='create_run',
+        task_id="create_run",
         http_hook=http_hook,
-        endpoint='01001000/json',
-        headers=headers
+        endpoint="01001000/json",
+        headers=headers,
     )
 
     sensor = DebussyHttpSensor(
-        task_id='run_sensor',
-        endpoint='01001000/json',
+        task_id="run_sensor",
+        endpoint="01001000/json",
         http_hook=http_hook,
         headers=headers,
         response_check=check_response,
-        op_kwargs={'expected_json_content': expected_json_content}
+        op_kwargs={"expected_json_content": expected_json_content},
     )
 
     http_run >> sensor

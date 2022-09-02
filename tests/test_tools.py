@@ -9,24 +9,24 @@ from airflow.models.baseoperator import BaseOperator
 
 def test_dag(dag_id):
     """
-        simple dag definition for testing.
-        for more complex definition instantiate your dag
+    simple dag definition for testing.
+    for more complex definition instantiate your dag
     """
     default_args = {
-        'owner': 'debussy_framework_test',
-        'retires': 0,
+        "owner": "debussy_framework_test",
+        "retires": 0,
     }
 
     dag = DAG(
         dag_id=dag_id,
         default_args=default_args,
-        description='Test dag',
-        schedule_interval='0 5 * * *',
+        description="Test dag",
+        schedule_interval="0 5 * * *",
         catchup=False,
         start_date=dt.datetime(2022, 1, 1),
         max_active_tasks=3,
         max_active_runs=1,
-        tags=['debussy_framework', 'test dag']
+        tags=["debussy_framework", "test dag"],
     )
     return dag
 
@@ -37,17 +37,19 @@ class TestHook(BaseHook):
 
     def set_method(self, name, function_mock: Callable):
         """
-            set the method `name` to be `function_mock`
-            this is intended to be used on testing to mock a response from a hook
+        set the method `name` to be `function_mock`
+        this is intended to be used on testing to mock a response from a hook
         """
         self.__dict__[name] = function_mock
         return self
 
 
 class TestHookOperator(BaseOperator):
-    template_fields = ['fn_kwargs']
+    template_fields = ["fn_kwargs"]
 
-    def __init__(self, execute_fn: Callable, fn_kwargs=None, task_id='test_hook', **kwargs):
+    def __init__(
+        self, execute_fn: Callable, fn_kwargs=None, task_id="test_hook", **kwargs
+    ):
         self.execute_fn = execute_fn
         self.fn_kwargs = fn_kwargs or {}
 
@@ -58,15 +60,14 @@ class TestHookOperator(BaseOperator):
 
 
 class TestOperator(BaseOperator):
-    def __init__(self, operator: BaseOperator, op_kwargs=None,
-                 task_id=None, **kwargs):
+    def __init__(self, operator: BaseOperator, op_kwargs=None, task_id=None, **kwargs):
         self.op_kwargs = op_kwargs or {}
         self.operator = operator
-        self.task_id = task_id or f'TestOp_{self.operator.__qualname__}'
+        self.task_id = task_id or f"TestOp_{self.operator.__qualname__}"
         super().__init__(task_id=self.task_id, **kwargs)
 
     def execute(self, context):
-        op_kwargs = {'task_id': f'{self.task_id}_{self.operator.__qualname__}'}
+        op_kwargs = {"task_id": f"{self.task_id}_{self.operator.__qualname__}"}
         op_kwargs.update(self.op_kwargs)
         task = self.operator(**op_kwargs, dag=self.dag)
         task.pre_execute(context)
@@ -77,7 +78,9 @@ class TestOperator(BaseOperator):
 
 
 class TestConnectionsExistOperator(BaseOperator):
-    def __init__(self, connections: Iterable[str], task_id='connections_test', **kwargs):
+    def __init__(
+        self, connections: Iterable[str], task_id="connections_test", **kwargs
+    ):
         self.connections = connections
         self.kwargs = kwargs
 
@@ -93,7 +96,9 @@ class TestConnectionsExistOperator(BaseOperator):
                 self.log.info(f"FAILED - The conn_id `{connection_id}` isn't defined")
                 failed_conn.append(connection_id)
         if failed_conn:
-            raise AirflowNotFoundException(f"FAILED - The conn_ids `{', '.join(failed_conn)}` isn't defined")
+            raise AirflowNotFoundException(
+                f"FAILED - The conn_ids `{', '.join(failed_conn)}` isn't defined"
+            )
         self.log.info("OK - All connections exist")
 
 
@@ -101,19 +106,25 @@ class TestConnectionsExistOperator(BaseOperator):
 class TestExceptionOperator(BaseOperator):
     # template_fields = ['op_kwargs']
 
-    def __init__(self, operator: Type[BaseOperator], op_kwargs=None,
-                 exception: Exception = Exception, task_id=None, **kwargs):
+    def __init__(
+        self,
+        operator: Type[BaseOperator],
+        op_kwargs=None,
+        exception: Exception = Exception,
+        task_id=None,
+        **kwargs,
+    ):
         self.exception = exception
         self.op_kwargs = op_kwargs or {}
         self.operator = operator
-        self.task_id = task_id or f'TestExcOp_{self.operator.__qualname__}'
+        self.task_id = task_id or f"TestExcOp_{self.operator.__qualname__}"
         self.__task = None
         super().__init__(task_id=self.task_id, **kwargs)
 
     @property
     def task(self):
         if self.__task is None:
-            op_kwargs = {'task_id': f'{self.task_id}_{self.operator.__qualname__}'}
+            op_kwargs = {"task_id": f"{self.task_id}_{self.operator.__qualname__}"}
             op_kwargs.update(self.op_kwargs)
             self.__task = self.operator(**op_kwargs, dag=self.dag)
         return self.__task
