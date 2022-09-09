@@ -27,7 +27,7 @@ pip install debussy-airflow
 
 ### Prerequisites
 
-An environment running `apache-airflow` 2.2.0+ with the following requirements:
+An environment running `apache-airflow` 2.2.0+ with the following requirements (already managed as dependencies):
 
 ```yaml
 - apache-airflow-providers-google == 8.0.0
