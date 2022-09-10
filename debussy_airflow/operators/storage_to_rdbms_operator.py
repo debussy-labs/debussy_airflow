@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 from airflow.models.baseoperator import BaseOperator
-from debussy_airflow.hooks.db_api_hook import DbApiInterfaceHook
+from debussy_airflow.hooks.db_api_hook import DbApiHookInterface
 from debussy_airflow.hooks.storage_hook import StorageHookInterface
 
 
@@ -15,7 +15,7 @@ class StorageToRdbmsOperator(BaseOperator):
 
     def __init__(
         self,
-        dbapi_hook: DbApiInterfaceHook,
+        dbapi_hook: DbApiHookInterface,
         storage_hook: StorageHookInterface,
         table_name,
         storage_file_uri,
@@ -35,7 +35,8 @@ class StorageToRdbmsOperator(BaseOperator):
         query = f"REPLACE INTO {self.table_name}({','.join(escaped_columns)}) VALUES "
         query_records = []
         for records in dataset_table.values.tolist():
-            query_records.append(str(records).replace("[", "(").replace("]", ")"))
+            query_records.append(str(records).replace(
+                "[", "(").replace("]", ")"))
         query_records = ",".join(query_records) + ";"
         query += query_records
         return query
