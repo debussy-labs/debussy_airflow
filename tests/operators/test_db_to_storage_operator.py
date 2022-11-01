@@ -2,7 +2,7 @@ from airflow import DAG
 from debussy_airflow.hooks.storage_hook import GCSHook
 from debussy_airflow.operators.db_to_storage_operator import DatabaseToStorageOperator
 
-from tests.test_tools import TestHookOperator, test_dag
+from test_tools import TestHookOperator, test_dag
 
 gcs_hook = GCSHook()
 
