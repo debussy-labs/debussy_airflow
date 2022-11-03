@@ -13,8 +13,8 @@ def extract_echo_token(response):
     return token
 
 
-conn_id = "http_newrelic"
-http_hook = HttpHook(method="POST", http_conn_id=conn_id)
+conn_id = "http_postman_echo"
+http_hook = HttpHook(method="GET", http_conn_id=conn_id)
 encoded_auth = base64.b64encode(b"postman:password").decode("ascii")
 print(encoded_auth)
 test_token = "test_access_token"
@@ -32,8 +32,8 @@ def assert_authentication(context, hook, endpoint, log):
     assert response.json()["authenticated"] is True
 
 
-def assert_http_hook(context, hook, endpoint, headers, log):
-    response = hook.run(endpoint=endpoint, data=None, headers=headers)
+def assert_http_hook(context, hook, endpoint, headers, data, log):
+    response = hook.run(endpoint=endpoint, data=data, headers=headers)
     log.info(response.text)
     assert response.json()["args"] == {"name": "debussy"}
     log.info("OK - args test")
@@ -68,6 +68,7 @@ with test_dag("test_debussy_http_dag") as dag:
     test_http_run.fn_kwargs = {
         "log": test_http_run.log,
         "hook": http_hook,
+        "endpoint": "/get",
         "headers": {"x-test": "test_header"},
         "data": {"name": "debussy"},
     }
