@@ -3,9 +3,8 @@ from airflow import DAG
 from debussy_airflow.hooks.db_api_hook import DbApiHookInterface, MySqlConnectorHook, PostgreSQLConnectorHook
 from debussy_airflow.hooks.storage_hook import GCSHook
 from debussy_airflow.operators.storage_to_rdbms_operator import StorageToRdbmsOperator
-from MySQLdb._exceptions import OperationalError
 
-from test_tools import TestExceptionOperator, TestHookOperator, test_dag
+from tests.test_tools import TestHookOperator, test_dag
 
 
 def test_query_run_empty_list(

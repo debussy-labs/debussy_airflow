@@ -5,7 +5,7 @@ from debussy_airflow.operators.basic_operator import (
     StartOperator,
     FinishOperator,
 )
-from test_tools import test_dag
+from tests.test_tools import test_dag
 
 with test_dag(dag_id="test_debussy_framework_basic_operators") as dag:
 
