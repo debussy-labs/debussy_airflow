@@ -5,10 +5,10 @@ from pandas import DataFrame
 
 from abc import abstractmethod
 from airflow.models import Connection
-from airflow.hooks.dbapi_hook import DbApiHook as AirflowDbApiHook
+from airflow.hooks.dbapi import DbApiHook
 
 
-class DbApiHookInterface(AirflowDbApiHook):
+class DbApiHookInterface(DbApiHook):
     @abstractmethod
     def query_run(self, sql: str, autocommit: bool):
         pass
