@@ -3,7 +3,7 @@ from debussy_airflow.hooks.storage_hook import StorageHookInterface
 from debussy_airflow.operators.storage_to_storage_operator import (
     StorageToStorageOperator,
 )
-from tests.test_tools import test_dag
+from test_tools import test_dag
 
 
 class StorageTestHook(StorageHookInterface):

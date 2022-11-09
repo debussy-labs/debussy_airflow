@@ -29,18 +29,6 @@ class StorageToRdbmsOperator(BaseOperator):
         self.temp_folder = temp_folder
         super().__init__(**kwargs)
 
-    def build_insert_query(self, dataset_table: pd.DataFrame):
-        query_records = []
-        escaped_columns = map(lambda c: f"`{c}`", dataset_table.columns)
-        query = f"REPLACE INTO {self.table_name}({','.join(escaped_columns)}) VALUES "
-        query_records = []
-        for records in dataset_table.values.tolist():
-            query_records.append(str(records).replace(
-                "[", "(").replace("]", ")"))
-        query_records = ",".join(query_records) + ";"
-        query += query_records
-        return query
-
     def execute(self, context):
         tmp_filepath = os.path.join(
             self.temp_folder, self.storage_hook.basename(self.storage_file_uri)
@@ -57,6 +45,6 @@ class StorageToRdbmsOperator(BaseOperator):
             na_values=None,
         )
         self.log.info("StorageToRdbmsOperator - Building insert query")
-        query = self.build_insert_query(dataset_table)
+        query = self.dbapi_hook.build_upsert_query(table_name=self.table_name, dataset_table=dataset_table)
 
         return self.dbapi_hook.query_run(sql=query, autocommit=True)

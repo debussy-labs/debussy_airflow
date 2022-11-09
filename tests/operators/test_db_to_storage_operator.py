@@ -6,7 +6,7 @@ from tests.test_tools import TestHookOperator, test_dag
 
 gcs_hook = GCSHook()
 
-bucket = "gs://dotz-datalake-prod-artifacts/"
+bucket = "gs://dotz-datalake-dev-artifacts/"
 object_path = ""
 data_string = "test_string"
 
@@ -25,6 +25,7 @@ with test_dag(dag_id="test_debussy_storage_hook") as dag:
         bucket="",
         object_path="",
     )
+
     test_upload_task = TestHookOperator(
         task_id="test_upload_string",
         execute_fn=lambda bucket, object_path, data_string: gcs_hook.upload_string(
@@ -32,9 +33,9 @@ with test_dag(dag_id="test_debussy_storage_hook") as dag:
         ),
     )
 
-    """
+    
     test_download_task = TestHookOperator(
         task_id='test_download_string',
         execute_fn=assert_download_string,
     )
-    """
+    
