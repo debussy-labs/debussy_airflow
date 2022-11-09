@@ -45,6 +45,7 @@ class StorageToRdbmsOperator(BaseOperator):
             na_values=None,
         )
         self.log.info("StorageToRdbmsOperator - Building insert query")
-        query = self.dbapi_hook.build_upsert_query(table_name=self.table_name, dataset_table=dataset_table)
+        query = self.dbapi_hook.build_upsert_query(
+            table_name=self.table_name, dataset_table=dataset_table)
 
         return self.dbapi_hook.query_run(sql=query, autocommit=True)

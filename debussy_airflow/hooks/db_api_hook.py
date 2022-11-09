@@ -1,4 +1,3 @@
-import logging
 import pg8000 as pgsql
 import MySQLdb as mysql
 from typing import Dict
@@ -40,11 +39,11 @@ class MySqlConnectorHook(DbApiHookInterface):
         conn = self.get_connection(conn_id=self.rdbms_conn_id)
         conn_config = self._get_conn_config_mysql_client(conn)
         return mysql.connect(**conn_config)
-    
+
     def build_upsert_query(self, table_name: str, dataset_table: DataFrame):
         if dataset_table.empty:
             return None
-        
+
         escaped_columns = map(lambda c: f"`{c}`", dataset_table.columns)
         query = f"REPLACE INTO {table_name}({','.join(escaped_columns)}) VALUES "
         query_records = []
@@ -57,6 +56,7 @@ class MySqlConnectorHook(DbApiHookInterface):
 
     def query_run(self, sql: str, autocommit: bool):
         super().run(sql=sql, autocommit=autocommit)
+
 
 class PostgreSQLConnectorHook(DbApiHookInterface):
     def __init__(self, rdbms_conn_id: str = "rdbms_conn_id"):
@@ -72,8 +72,9 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
         return query_records
 
     def _build_update_records(self, columns: list):
-        
-        query_update_records = [f"{column}=excluded.{column}," for column in columns]
+
+        query_update_records = [
+            f"{column}=excluded.{column}," for column in columns]
         query_update_records = f"{''.join(query_update_records)[:-1]};"
         return query_update_records
 
@@ -88,7 +89,7 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
         return conn_config
 
     def _get_primary_key(self, table_name):
-        pk_query=f"""
+        pk_query = f"""
             SELECT a.attname
             FROM pg_index i
             JOIN pg_attribute a 
@@ -97,7 +98,7 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
             AND i.indisprimary;
             """
         result = super().get_first(sql=pk_query)
-        
+
         return result[0] if result else None
 
     def get_conn(self):
@@ -110,16 +111,17 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
     """
         This build_upsert_query function use upsert feature statement for pgsql
     """
+
     def build_upsert_query(self, table_name: str, dataset_table: DataFrame):
         if dataset_table.empty:
             return None
-        
+
         columns_name = ','.join(dataset_table.columns.tolist())
         query = f"INSERT INTO {table_name}({columns_name}) VALUES "
-        dataset_table_records = dataset_table.values.tolist()        
+        dataset_table_records = dataset_table.values.tolist()
         query += self._build_insert_records(dataset_table_records)
         result_pk = self._get_primary_key(table_name)
-        if result_pk:    
+        if result_pk:
             query += f"\n ON CONFLICT ({result_pk}) \n DO \n UPDATE SET {self._build_update_records(dataset_table.columns.tolist())}"
         return query
 
