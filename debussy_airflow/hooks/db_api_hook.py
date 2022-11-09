@@ -1,3 +1,4 @@
+import logging
 import pg8000 as pgsql
 import MySQLdb as mysql
 from typing import Dict
@@ -96,7 +97,8 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
             AND i.indisprimary;
             """
         result = super().get_first(sql=pk_query)
-        return result[0]
+        
+        return result[0] if result else None
 
     def get_conn(self):
         if self.rdbms_conn_id is None:
@@ -116,7 +118,9 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
         query = f"INSERT INTO {table_name}({columns_name}) VALUES "
         dataset_table_records = dataset_table.values.tolist()        
         query += self._build_insert_records(dataset_table_records)
-        query += f"\n ON CONFLICT ({self._get_primary_key(table_name)}) \n DO \n UPDATE SET {self._build_update_records(dataset_table.columns.tolist())}"
+        result_pk = self._get_primary_key(table_name)
+        if result_pk:    
+            query += f"\n ON CONFLICT ({result_pk}) \n DO \n UPDATE SET {self._build_update_records(dataset_table.columns.tolist())}"
         return query
 
     def query_run(self, sql: str, autocommit: bool):
