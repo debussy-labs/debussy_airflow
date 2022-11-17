@@ -121,7 +121,7 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
         dataset_table_records = dataset_table.values.tolist()
         query += self._build_insert_records(dataset_table_records)
         result_pk = self._get_primary_key(table_name)
-        if result_pk:
+        if result_pk and result_pk in columns_name:
             query += f"\n ON CONFLICT ({result_pk}) \n DO \n UPDATE SET {self._build_update_records(dataset_table.columns.tolist())}"
         return query
 
