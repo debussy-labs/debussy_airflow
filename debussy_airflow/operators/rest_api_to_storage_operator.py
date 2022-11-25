@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Optional, Union, Dict, Any
 
 import requests
 from airflow.hooks.http_hook import HttpHook as AirflowHttpHook
@@ -14,6 +14,9 @@ class RestApiToStorageOperator(BaseOperator):
         "object_path",
         "endpoint",
         "httphook_kwargs",
+        "data",
+        "json",
+        "headers"
     )
 
     def __init__(
@@ -23,20 +26,26 @@ class RestApiToStorageOperator(BaseOperator):
         storage_hook: StorageHookInterface,
         bucket,
         object_path,
+        json: dict = None,
         response_transformer_callable: Callable = None,
         flag_save_raw_response: bool = False,
         raw_bucket=None,
         raw_object_path=None,
         httphook_kwargs=None,
+        headers: dict = None,
+        data: Optional[Union[Dict[str, Any], str]] = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.http_hook = http_hook
         self.endpoint = endpoint
+        self.data = data
+        self.headers = headers
         self.transformer = response_transformer_callable or self.response_transformer
         self.storage_hook = storage_hook
         self.bucket = bucket
         self.object_path = object_path
+        self.json = json
         self.flag_save_raw_response = flag_save_raw_response
         self.raw_bucket = raw_bucket
         self.raw_object_path = raw_object_path
@@ -74,10 +83,10 @@ class RestApiToStorageOperator(BaseOperator):
         )
 
     def api_to_storage(
-        self, endpoint, object_path, raw_object_path, httphook_kwargs, context
+        self, headers, data, endpoint, json, object_path, raw_object_path, httphook_kwargs, context
     ):
         httphook_kwargs = httphook_kwargs or {}
-        response = self.http_hook.run(endpoint, **httphook_kwargs)
+        response = self.http_hook.run(headers=headers, endpoint=endpoint, json=json, data=data, **httphook_kwargs)
         if self.flag_save_raw_response:
             self.upload_from_string(self.raw_bucket, raw_object_path, response.text)
         data_string = self.transformer(response, **context)
@@ -86,7 +95,10 @@ class RestApiToStorageOperator(BaseOperator):
 
     def execute(self, context):
         return self.api_to_storage(
+            self.headers,
+            self.data,
             self.endpoint,
+            self.json,
             self.object_path,
             self.raw_object_path,
             self.httphook_kwargs,

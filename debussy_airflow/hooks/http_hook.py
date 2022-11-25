@@ -122,9 +122,10 @@ class HttpHook(BaseHook):
 
     def run(
         self,
+        headers: Optional[Dict] = None,
         endpoint: Optional[str] = None,
+        json: Optional[Dict] = None,
         data: Optional[Union[Dict[str, Any], str]] = None,
-        headers: Optional[Dict[str, Any]] = None,
         extra_options: Optional[Dict[str, Any]] = None,
         **request_kwargs: Any,
     ) -> Any:
@@ -168,7 +169,7 @@ class HttpHook(BaseHook):
         else:
             # Others use data
             req = requests.Request(
-                self.method, url, data=data, headers=headers, **request_kwargs
+                self.method, url, data=data, headers=headers, json=json, **request_kwargs
             )
 
         prepped_request = session.prepare_request(req)
