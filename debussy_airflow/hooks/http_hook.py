@@ -49,6 +49,7 @@ def bearer_factory(get_token: Callable, login, password):
     # so we will use a functools partial to create a factory
     # this factory knows the get_token callable to instantiate the bearer auth
     # and will ignore the login adn password
+    #
     return BearerAuth(get_token)
 
 

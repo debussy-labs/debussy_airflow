@@ -138,7 +138,7 @@ class RestListApiToStorageOperator(RestApiToStorageOperator):
         self.flag_save_raw_response = flag_save_raw_response
         self.raw_bucket = raw_bucket
         self.raw_object_paths = raw_object_paths
-        # NILTON AJUSTAR self.validate_params()
+        ## NILTON AJUSTAR self.validate_params()
         self.raw_object_paths = raw_object_paths or object_paths
         self.raw_bucket = raw_bucket or bucket
         self.httphook_kwargs = httphook_kwargs
