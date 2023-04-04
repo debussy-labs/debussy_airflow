@@ -1,4 +1,4 @@
-from airflow import DAG
+# DAG
 from debussy_airflow.hooks.http_hook import HttpHook
 from debussy_airflow.operators.http_operator import HTTPOperator
 from debussy_airflow.sensors.http_sensor import DebussyHttpSensor

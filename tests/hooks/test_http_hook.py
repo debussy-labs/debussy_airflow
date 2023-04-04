@@ -1,6 +1,5 @@
+# DAG
 import base64
-
-from airflow import DAG
 from debussy_airflow.hooks.http_hook import BearerHttpHook, HttpHook
 from tests.test_tools import TestHookOperator, test_dag
 

@@ -1,6 +1,11 @@
+# DAG
+
 import pandas as pd
-from airflow import DAG
-from debussy_airflow.hooks.db_api_hook import DbApiHookInterface, MySqlConnectorHook, PostgreSQLConnectorHook
+from debussy_airflow.hooks.db_api_hook import (
+    DbApiHookInterface,
+    MySqlConnectorHook,
+    PostgreSQLConnectorHook,
+)
 from debussy_airflow.hooks.storage_hook import GCSHook
 from debussy_airflow.operators.storage_to_rdbms_operator import StorageToRdbmsOperator
 
@@ -24,15 +29,24 @@ def test_query_run_data_list(context, hook_dbapi: MySqlConnectorHook, sql, autoc
 
 
 def test_build_query_operator(
-    context, hook_dbapi: DbApiHookInterface, dataset_table: pd.DataFrame, table_name: str
+    context,
+    hook_dbapi: DbApiHookInterface,
+    dataset_table: pd.DataFrame,
+    table_name: str,
 ):
 
-    build_query = hook_dbapi.build_upsert_query(table_name=table_name, dataset_table=dataset_table)
+    build_query = hook_dbapi.build_upsert_query(
+        table_name=table_name, dataset_table=dataset_table
+    )
     print(f"build_query: {build_query}")
-    assert ("REPLACE INTO public.test(`id_page`,`id_lead`,`name_campain`,`created_at_lead`,`is_client_dotz`,`celular`) VALUES " in build_query)
+    assert (
+        "REPLACE INTO public.test(`id_page`,`id_lead`,`name_campain`,`created_at_lead`,`is_client_dotz`,`celular`) VALUES "
+        in build_query
+    )
 
 
 def get_id_page_incr(hook_dbapi: DbApiHookInterface):
+    return ""
     id_page_incr = hook_dbapi.query_run(
         sql="SELECT max(id_page)+1 FROM public.test", autocommit=True
     )
@@ -82,14 +96,16 @@ with test_dag(dag_id="test_debussy_framework_storage_to_rdbms") as dag:
         task_id="test_storage_to_mysql_operator",
     )
 
-    dataset_table = get_pandas_dataset_table_test(id_page_incr=get_id_page_incr(hook_dbapi=mysql_hook))
-    
+    dataset_table = get_pandas_dataset_table_test(
+        id_page_incr=get_id_page_incr(hook_dbapi=mysql_hook)
+    )
+
     test_build_query_storage_to_rdbms_operator = TestHookOperator(
         execute_fn=test_build_query_operator,
         fn_kwargs={
             "hook_dbapi": mysql_hook,
             "dataset_table": dataset_table,
-            "table_name": table_name
+            "table_name": table_name,
         },
         task_id="test_build_query_storage_to_mysql_operator",
     )
@@ -104,7 +120,7 @@ with test_dag(dag_id="test_debussy_framework_storage_to_rdbms") as dag:
         task_id="test_query_run_mysql_dbapi_hook",
     )
 
-    table_name="public.test"
+    table_name = "public.test"
     test_storage_to_rdbms_operator = StorageToRdbmsOperator(
         dbapi_hook=pgsql_hook,
         storage_hook=storage_hook,
