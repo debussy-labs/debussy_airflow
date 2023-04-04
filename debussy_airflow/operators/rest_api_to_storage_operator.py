@@ -16,7 +16,7 @@ class RestApiToStorageOperator(BaseOperator):
         "httphook_kwargs",
         "data",
         "json",
-        "headers"
+        "headers",
     )
 
     def __init__(
@@ -83,10 +83,20 @@ class RestApiToStorageOperator(BaseOperator):
         )
 
     def api_to_storage(
-        self, headers, data, endpoint, json, object_path, raw_object_path, httphook_kwargs, context
+        self,
+        headers,
+        data,
+        endpoint,
+        json,
+        object_path,
+        raw_object_path,
+        httphook_kwargs,
+        context,
     ):
         httphook_kwargs = httphook_kwargs or {}
-        response = self.http_hook.run(headers=headers, endpoint=endpoint, json=json, data=data, **httphook_kwargs)
+        response = self.http_hook.run(
+            headers=headers, endpoint=endpoint, json=json, data=data, **httphook_kwargs
+        )
         if self.flag_save_raw_response:
             self.upload_from_string(self.raw_bucket, raw_object_path, response.text)
         data_string = self.transformer(response, **context)

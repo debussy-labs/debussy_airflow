@@ -1,7 +1,7 @@
+# DAG
 import os
 from pathlib import Path
 
-from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from debussy_airflow.hooks.storage_hook import (
     GCSHook,

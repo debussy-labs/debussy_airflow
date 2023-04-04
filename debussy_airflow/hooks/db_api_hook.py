@@ -48,8 +48,7 @@ class MySqlConnectorHook(DbApiHookInterface):
         query = f"REPLACE INTO {table_name}({','.join(escaped_columns)}) VALUES "
         query_records = []
         for records in dataset_table.values.tolist():
-            query_records.append(str(records).replace(
-                "[", "(").replace("]", ")"))
+            query_records.append(str(records).replace("[", "(").replace("]", ")"))
         query_records = ",".join(query_records) + ";"
         query += query_records
         return query
@@ -66,15 +65,13 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
     def _build_insert_records(self, dataset_table_values: list):
         query_records = []
         for records in dataset_table_values:
-            query_records.append(str(records).replace(
-                "[", "(").replace("]", ")"))
+            query_records.append(str(records).replace("[", "(").replace("]", ")"))
         query_records = ",".join(query_records)
         return query_records
 
     def _build_update_records(self, columns: list):
 
-        query_update_records = [
-            f"{column}=excluded.{column}," for column in columns]
+        query_update_records = [f"{column}=excluded.{column}," for column in columns]
         query_update_records = f"{''.join(query_update_records)[:-1]};"
         return query_update_records
 
@@ -116,7 +113,7 @@ class PostgreSQLConnectorHook(DbApiHookInterface):
         if dataset_table.empty:
             return None
 
-        columns_name = ','.join(dataset_table.columns.tolist())
+        columns_name = ",".join(dataset_table.columns.tolist())
         query = f"INSERT INTO {table_name}({columns_name}) VALUES "
         dataset_table_records = dataset_table.values.tolist()
         query += self._build_insert_records(dataset_table_records)

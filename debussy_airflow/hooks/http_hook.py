@@ -170,7 +170,12 @@ class HttpHook(BaseHook):
         else:
             # Others use data
             req = requests.Request(
-                self.method, url, data=data, headers=headers, json=json, **request_kwargs
+                self.method,
+                url,
+                data=data,
+                headers=headers,
+                json=json,
+                **request_kwargs,
             )
 
         prepped_request = session.prepare_request(req)
