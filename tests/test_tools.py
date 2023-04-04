@@ -1,10 +1,15 @@
-from typing import Callable, Iterable, Type
+from typing import Callable, Iterable, Optional, Type
 import datetime as dt
 
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.exceptions import AirflowNotFoundException, AirflowException
 from airflow.models.baseoperator import BaseOperator
+from debussy_airflow.operators.reschedulable_operator import BaseReschedulableOperator
+
+
+class TestFailedException(AirflowException):
+    ...
 
 
 def test_dag(dag_id):
@@ -24,7 +29,7 @@ def test_dag(dag_id):
         schedule_interval="0 5 * * *",
         catchup=False,
         start_date=dt.datetime(2022, 1, 1),
-        max_active_tasks=3,
+        # max_active_tasks=3,
         max_active_runs=1,
         tags=["debussy_framework", "test dag"],
     )
@@ -59,22 +64,115 @@ class TestHookOperator(BaseOperator):
         self.execute_fn(context, **self.fn_kwargs)
 
 
-class TestOperator(BaseOperator):
-    def __init__(self, operator: BaseOperator, op_kwargs=None, task_id=None, **kwargs):
+def always_true(_):
+    return True
+
+
+class TestReschedulableOperator(BaseReschedulableOperator):
+    template_fields = ("op_kwargs",)
+
+    def __init__(
+        self,
+        operator: BaseOperator,
+        check_return_callable: Optional[Callable] = None,
+        op_kwargs=None,
+        task_id=None,
+        **kwargs,
+    ):
         self.op_kwargs = op_kwargs or {}
+        self.task_id = task_id or f"TestOp_{operator.__qualname__}"
         self.operator = operator
-        self.task_id = task_id or f"TestOp_{self.operator.__qualname__}"
+        self._task = None
         super().__init__(task_id=self.task_id, **kwargs)
 
+        self.check_return_callable = check_return_callable or always_true
+
+    @property
+    def task(self):
+        if self._task is None:
+            op_kwargs = {"task_id": f"{self.task_id}_{self.operator.__qualname__}"}
+            op_kwargs.update(self.op_kwargs)
+            self._task = self.operator(**op_kwargs, dag=self.dag)
+        return self._task
+
+    def setup(self, context):
+        self.task.setup(context)
+
+    def poke(self, context):
+        try:
+            ret = self.task.poke(context)
+            if not self.check_return_callable(ret):
+                raise TestFailedException()
+        except Exception as exc:
+            raise TestFailedException() from exc
+        return ret
+
+
+class TestExceptionReschedulableOperator(BaseReschedulableOperator):
+    template_fields = ("op_kwargs",)
+
+    def __init__(
+        self,
+        operator: BaseOperator,
+        exception: Exception,
+        op_kwargs=None,
+        task_id=None,
+        **kwargs,
+    ):
+        self.op_kwargs = op_kwargs or {}
+        self.task_id = task_id or f"TestOp_{operator.__qualname__}"
+        self.operator = operator
+        self.exception = exception
+        self._task = None
+        super().__init__(task_id=self.task_id, **kwargs)
+
+    @property
+    def task(self):
+        if self._task is None:
+            op_kwargs = {"task_id": f"{self.task_id}_{self.operator.__qualname__}"}
+            op_kwargs.update(self.op_kwargs)
+            self._task = self.operator(**op_kwargs, dag=self.dag)
+        return self._task
+
     def execute(self, context):
-        op_kwargs = {"task_id": f"{self.task_id}_{self.operator.__qualname__}"}
+        try:
+            self.task.execute(context)
+        except self.exception as exc:
+            self.log.info(f"OK - Exception raised: {exc}")
+            return True
+        self.log.error(f"FAILED - Exception {self.exception} not raised.")
+        raise TestFailedException()
+
+
+class TestOperator(BaseOperator):
+    def __init__(
+        self,
+        operator: BaseOperator,
+        check_return_callable: Optional[Callable] = None,
+        op_kwargs=None,
+        task_id=None,
+        **kwargs,
+    ):
+        self.op_kwargs = op_kwargs or {}
+        self.task_id = task_id or f"TestOp_{operator.__qualname__}"
+        super().__init__(task_id=self.task_id, **kwargs)
+        op_kwargs = {"task_id": f"{self.task_id}_{operator.__qualname__}"}
         op_kwargs.update(self.op_kwargs)
-        task = self.operator(**op_kwargs, dag=self.dag)
-        task.pre_execute(context)
-        ret = task.execute(context)
-        task.post_execute(context)
+        self.task = operator(**op_kwargs, dag=self.dag)
+        self.check_return_callable = check_return_callable or always_true
+
+    def pre_execute(self, context):
+        self.task.pre_execute(context)
+
+    def execute(self, context):
+        ret = self.task.execute(context)
+        if not self.check_return_callable(ret):
+            raise TestFailedException()
         if self.do_xcom_push:
             return ret
+
+    def post_execute(self, context):
+        self.task.post_execute(context)
 
 
 class TestConnectionsExistOperator(BaseOperator):
@@ -149,7 +247,7 @@ class TestExceptionOperator(BaseOperator):
             exception_raised = True
             self.log.info(f"OK - Exception raised: {exc}")
         except Exception as exc:
-            raise AirflowException(f"FAILED - Wrong exception raised: {exc}")
+            raise TestFailedException(f"FAILED - Wrong exception raised: {exc}")
 
         if not exception_raised:
-            raise AirflowException("FAILED - Exception not raised")
+            raise TestFailedException("FAILED - Exception not raised")
